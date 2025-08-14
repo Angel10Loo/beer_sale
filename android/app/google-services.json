@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "739935747973",
+    "project_id": "salebeer-4fe2d",
+    "storage_bucket": "salebeer-4fe2d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:739935747973:android:784c04d5d0e9f488858eec",
+        "android_client_info": {
+          "package_name": "ber.com"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAqlQVSEHi_RO9-1woRrL0e1giGBySFdVI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:739935747973:android:25c01694e3b7d657858eec",
+        "android_client_info": {
+          "package_name": "sale.beer_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAqlQVSEHi_RO9-1woRrL0e1giGBySFdVI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
