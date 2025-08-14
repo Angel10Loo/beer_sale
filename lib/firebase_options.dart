@@ -53,13 +53,14 @@ class DefaultFirebaseOptions {
     measurementId: 'G-CKSMRG6WE7',
   );
 
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAqlQVSEHi_RO9-1woRrL0e1giGBySFdVI',
-    appId: '1:739935747973:android:784c04d5d0e9f488858eec',
-    messagingSenderId: '739935747973',
-    projectId: 'salebeer-4fe2d',
-    storageBucket: 'salebeer-4fe2d.firebasestorage.app',
-  );
+static const FirebaseOptions android = FirebaseOptions(
+  apiKey: 'AIzaSyAEAESc2catyczqae8Mf84hfMcBAk979_I',
+  appId: '1:161971966544:android:6509d2a537e3febfef7755',
+  messagingSenderId: '161971966544',
+  projectId: 'salebeer2-a61cd',
+  storageBucket: 'salebeer2-a61cd.firebasestorage.app',
+);
+
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyAlbkizb91GDAA9nn2mIt98JgKFvLbSdhY',
