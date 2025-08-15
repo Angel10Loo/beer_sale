@@ -1,5 +1,7 @@
 // ignore_for_file: no_leading_underscores_for_local_identifiers
 
+import 'dart:math';
+
 import 'package:beer_sale/model/product.dart';
 import 'package:beer_sale/model/temp_sale_open_account.dart';
 import 'package:beer_sale/providers/open_account_provider.dart';
@@ -317,121 +319,250 @@ class _SaleOpenAccountState extends State<SaleOpenAccount> {
     );
   }
 
-  Widget _buildSaleList() {
-    final sales = context.watch<SaleProvider>().tempOpenSaleAccounts;
-    final products = context.watch<ProductProvider>().products;
+Widget _buildSaleList() {
+  final sales = context.watch<SaleProvider>().tempOpenSaleAccounts;
+  final products = context.watch<ProductProvider>().products;
 
-    if (sales.isEmpty) {
-      return Center(
-        child: Text(
-          'No hay Productos Agregados',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Colors.grey[600],
-          ),
-        ),
-      );
-    }
+  Widget totalBar() {
+    return Container(
+      padding: const EdgeInsets.only(left: 16, right: 20, top: 12, bottom: 12),
+      decoration: BoxDecoration(
+        border: Border(top: BorderSide(color: Colors.grey.shade300)),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(color: Colors.black12, blurRadius: 5, offset: const Offset(0, -2)),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          const Text('Total: ', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const SizedBox(width: 8),
+          Text('\$${_getTotalSaleAmount().toStringAsFixed(2)}',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.green.shade700)),
+        ],
+      ),
+    );
+  }
 
+  if (sales.isEmpty) {
     return Column(
       children: [
         Expanded(
-          child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            itemCount: sales.length,
-            itemBuilder: (context, i) {
-              final sale = sales[i];
-              final prod = products.firstWhere((p) => p.id == sale.productId);
-              return Card(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15)),
-                elevation: 6,
-                margin: const EdgeInsets.symmetric(vertical: 8),
-                child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-                  leading: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.asset(prod.imageName,
-                        width: 55, height: 55, fit: BoxFit.cover),
-                  ),
-                  title: Text(prod.name,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 17)),
-                  subtitle: Text(
-                    'Cantidad: ${sale.quantitySold}    Total: \$${sale.salePrice.toStringAsFixed(2)}',
-                    style: const TextStyle(
-                        fontWeight: FontWeight.w500, fontSize: 14),
-                  ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      TextButton.icon(
-                        style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          minimumSize: const Size(0, 36),
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          foregroundColor: Colors.green.shade700,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                        ),
-                        icon: const Icon(Icons.monetization_on, size: 20),
-                        label: const Text("Cobrar",
-                            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
-                        onPressed: () => _individualPayment(sale),
-                      ),
-                      const SizedBox(width: 6),
-                      TextButton.icon(
-                        style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          minimumSize: const Size(0, 36),
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          foregroundColor: Colors.red.shade700,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                        ),
-                        icon: const Icon(Icons.remove_circle, size: 20),
-                        label: const Text("Eliminar",
-                            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
-                        onPressed: () => _removeTemp(sale),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
+          child: Center(
+            child: Text('No hay Productos Agregados',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.grey[600])),
           ),
         ),
-        Container(
-          padding: const EdgeInsets.only(left: 16, right: 20, top: 12, bottom: 12),
-          decoration: BoxDecoration(
-            border: Border(top: BorderSide(color: Colors.grey.shade300)),
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black12,
-                blurRadius: 5,
-                offset: const Offset(0, -2),
-              ),
-            ],
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              const Text('Total: ',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              const SizedBox(width: 8),
-              Text('\$${_getTotalSaleAmount().toStringAsFixed(2)}',
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.green.shade700)),
-            ],
-          ),
-        ),
+        totalBar(),
       ],
     );
   }
+
+  return LayoutBuilder(builder: (context, constraints) {
+    final w = constraints.maxWidth;
+
+    // ========== MOBILE: single column, swipe-to-delete, compact rows ==========
+    if (w < 600) {
+      return Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              itemCount: sales.length,
+              itemBuilder: (context, i) {
+                final sale = sales[i];
+                final prod = products.firstWhere((p) => p.id == sale.productId);
+                final key = ValueKey(sale.id?.toString() ?? i.toString());
+
+                return Dismissible(
+                  key: key,
+                  direction: DismissDirection.endToStart,
+                  background: Container(
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.only(right: 20),
+                    decoration: BoxDecoration(color: Colors.red.shade600, borderRadius: BorderRadius.circular(15)),
+                    child: const Icon(Icons.delete, color: Colors.white),
+                  ),
+                  confirmDismiss: (_) async {
+                    // ask confirmation before deleting
+                    final confirmed = await showDialog<bool>(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: const Text('Eliminar'),
+                        content: const Text('¿Deseas eliminar este item de la cuenta?'),
+                        actions: [
+                          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancelar')),
+                          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Eliminar')),
+                        ],
+                      ),
+                    );
+                    if (confirmed == true) {
+                      await _removeTemp(sale);
+                      return true;
+                    }
+                    return false;
+                  },
+                  child: Card(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    elevation: 4,
+                    margin: const EdgeInsets.symmetric(vertical: 8),
+                    child: ListTile(
+                      dense: true,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      leading: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.asset(
+                          prod.imageName,
+                          width: 48,
+                          height: 48,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      title: Text(prod.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15), maxLines: 1, overflow: TextOverflow.ellipsis),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 4),
+                          Text('Cantidad: ${sale.quantitySold}', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+                          const SizedBox(height: 2),
+                          Text('Total: \$${sale.salePrice.toStringAsFixed(2)}', style: TextStyle(fontSize: 13, color: Colors.green.shade700)),
+                        ],
+                      ),
+                      trailing: PopupMenuButton<String>(
+                        onSelected: (val) {
+                          if (val == 'pay') {
+                            _individualPayment(sale);
+                          } else if (val == 'del') {
+                            _removeTemp(sale);
+                          }
+                        },
+                        itemBuilder: (_) => [
+                          const PopupMenuItem(value: 'pay', child: Text('Cobrar')),
+                          const PopupMenuItem(value: 'del', child: Text('Eliminar')),
+                        ],
+                      ),
+                      onTap: () {
+                        // optional: open details, or do nothing
+                        // _showProductDetails(context, prod); // if you have a details function
+                      },
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          totalBar(),
+        ],
+      );
+    }
+
+    // ========== TABLET: 2-column grid ==========
+    if (w < 1000) {
+      final crossAxisCount = 2;
+      final crossAxisSpacing = 16.0;
+      final horizontalPadding = 16.0;
+      final usableWidth = w - horizontalPadding * 2 - crossAxisSpacing * (crossAxisCount - 1);
+      final tileWidth = usableWidth / crossAxisCount;
+
+      return Column(
+        children: [
+          Expanded(
+            child: GridView.builder(
+              padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 12),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossAxisCount,
+                crossAxisSpacing: crossAxisSpacing,
+                mainAxisSpacing: 12,
+                childAspectRatio: (tileWidth / 160).clamp(1.0, 2.2),
+              ),
+              itemCount: sales.length,
+              itemBuilder: (context, i) {
+                final sale = sales[i];
+                // reuse the same card layout sized for grid cells
+                return Card(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                  elevation: 6,
+                  margin: const EdgeInsets.symmetric(vertical: 8),
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                    leading: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.asset(
+                        products.firstWhere((p) => p.id == sale.productId).imageName,
+                        width: min(96.0, tileWidth * 0.18),
+                        height: min(96.0, tileWidth * 0.18),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    title: Text(products.firstWhere((p) => p.id == sale.productId).name,
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
+                    subtitle: Text(
+                      'Cantidad: ${sale.quantitySold}    Total: \$${sale.salePrice.toStringAsFixed(2)}',
+                      style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
+                    ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(icon: const Icon(Icons.monetization_on, color: Colors.green), onPressed: () => _individualPayment(sale)),
+                        IconButton(icon: const Icon(Icons.delete, color: Colors.red), onPressed: () => _removeTemp(sale)),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          totalBar(),
+        ],
+      );
+    }
+
+    // ========== DESKTOP: DataTable overview ==========
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            scrollDirection: Axis.vertical,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: DataTable(
+                columnSpacing: 24,
+                headingRowHeight: 48,
+                dataRowHeight: 80,
+                columns: const [
+                  DataColumn(label: Text('Imagen')),
+                  DataColumn(label: Text('Producto')),
+                  DataColumn(label: Text('Cantidad')),
+                  DataColumn(label: Text('Total')),
+                  DataColumn(label: Text('Acciones')),
+                ],
+                rows: sales.map((sale) {
+                  final prod = products.firstWhere((p) => p.id == sale.productId);
+                  return DataRow(cells: [
+                    DataCell(ClipRRect(borderRadius: BorderRadius.circular(8), child: Image.asset(prod.imageName, width: 64, height: 64, fit: BoxFit.cover))),
+                    DataCell(Text(prod.name, style: const TextStyle(fontWeight: FontWeight.bold))),
+                    DataCell(Text('${sale.quantitySold}', style: const TextStyle(fontSize: 14))),
+                    DataCell(Text('\$${sale.salePrice.toStringAsFixed(2)}', style: TextStyle(color: Colors.green.shade700))),
+                    DataCell(Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(icon: const Icon(Icons.monetization_on, color: Colors.green), tooltip: 'Cobrar', onPressed: () => _individualPayment(sale)),
+                        IconButton(icon: const Icon(Icons.delete, color: Colors.red), tooltip: 'Eliminar', onPressed: () => _removeTemp(sale)),
+                      ],
+                    )),
+                  ]);
+                }).toList(),
+              ),
+            ),
+          ),
+        ),
+        totalBar(),
+      ],
+    );
+  });
+}
 
   void _increment() {
     if (selectedProduct == null) return;
