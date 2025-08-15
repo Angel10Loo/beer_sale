@@ -101,6 +101,7 @@ class UserProvider extends ChangeNotifier {
     required String email,
     required String plainPassword,
   }) async {
+
     _setLoading(true);
     _setError(null);
     try {
