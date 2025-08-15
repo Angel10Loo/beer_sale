@@ -1,16 +1,12 @@
+// lib/screens/login/login_screen.dart
+import 'dart:math';
 import 'package:flutter/material.dart';
 
 typedef AuthCallback = Future<bool> Function(String email, String password);
 
 class LoginScreen extends StatefulWidget {
-  /// Called when the user submits the form.
-  /// Should return true if authentication succeeded.
   final AuthCallback onLogin;
-
-  /// Called after a successful login. Optional.
   final VoidCallback? onSuccess;
-
-  /// Optional callback for "Forgot password".
   final VoidCallback? onForgotPassword;
 
   const LoginScreen({
@@ -32,7 +28,6 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _obscurePassword = true;
   bool _loading = false;
 
-
   @override
   void dispose() {
     _emailController.dispose();
@@ -41,12 +36,12 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   String? _validateEmail(String? value) {
-    if (value == null || value.trim().isEmpty) return 'Ingresa tu Usuario';
+    if (value == null || value.trim().isEmpty) return 'Ingresa tu usuario';
     return null;
   }
 
   String? _validatePassword(String? value) {
-    if (value == null || value.isEmpty) return 'Ingresa tu Contraseña';
+    if (value == null || value.isEmpty) return 'Ingresa tu contraseña';
     return null;
   }
 
@@ -56,30 +51,169 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       final email = _emailController.text.trim().toLowerCase();
       final password = _passwordController.text;
-
       final success = await widget.onLogin(email, password);
 
       if (success) {
-        if (widget.onSuccess != null) widget.onSuccess!();
+        widget.onSuccess?.call();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Contraseña o Usuario Invalido')),
+          const SnackBar(content: Text('Usuario o contraseña inválidos')),
         );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Login error: ${e.toString()}')),
+        SnackBar(content: Text('Error de inicio de sesión: ${e.toString()}')),
       );
     } finally {
       if (mounted) setState(() => _loading = false);
     }
   }
 
+  // Left info panel (keeps simple content)
+  Widget _infoPanel(ThemeData theme) {
+    return Container(
+      padding: const EdgeInsets.all(32),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.indigo.shade500, Colors.indigo.shade300],
+        ),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(16),
+          bottomLeft: Radius.circular(16),
+        ),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.shield_rounded, size: 72, color: Colors.white),
+          const SizedBox(height: 16),
+          Text('Acceso seguro',
+              style: theme.textTheme.titleMedium!.copyWith(color: Colors.white)),
+          const SizedBox(height: 8),
+          Text(
+            'Solo usuarios autorizados por su administrador pueden ingresar',
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyMedium!.copyWith(color: Colors.white70),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Right form panel — returns a widget that is safe to put inside a scroll view
+  Widget _formContent(ThemeData theme) {
+    return Padding(
+      padding: const EdgeInsets.all(28),
+      child: Column(
+        mainAxisSize: MainAxisSize.min, // important: don't force max height here
+        children: [
+          Container(
+            width: 72,
+            height: 72,
+            decoration: BoxDecoration(
+              color: Colors.indigo.shade50,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(Icons.person, size: 40, color: Colors.indigo),
+          ),
+          const SizedBox(height: 12),
+          Text('Bienvenido', style: theme.textTheme.titleMedium),
+          const SizedBox(height: 6),
+          Text('Inicia sesión para continuar',
+              style: theme.textTheme.bodyMedium!.copyWith(color: Colors.grey[600])),
+          const SizedBox(height: 20),
+
+          // Form
+          Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                TextFormField(
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.next,
+                  decoration: const InputDecoration(
+                    labelText: 'Usuario',
+                    prefixIcon: Icon(Icons.email_outlined),
+                  ),
+                  validator: _validateEmail,
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _passwordController,
+                  obscureText: _obscurePassword,
+                  textInputAction: TextInputAction.done,
+                  decoration: InputDecoration(
+                    labelText: 'Contraseña',
+                    prefixIcon: const Icon(Icons.lock_outline),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                          _obscurePassword ? Icons.visibility_off : Icons.visibility),
+                      onPressed: () =>
+                          setState(() => _obscurePassword = !_obscurePassword),
+                    ),
+                  ),
+                  validator: _validatePassword,
+                  onFieldSubmitted: (_) => _submit(),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: ElevatedButton(
+                    onPressed: _loading ? null : _submit,
+                    style: ElevatedButton.styleFrom(
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: _loading
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.2,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              SizedBox(width: 12),
+                              Text('Iniciando...'),
+                            ],
+                          )
+                        : const Text('Iniciar sesión'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 18),
+          Text(
+            'Solo usuarios autorizados por su administrador pueden ingresar',
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyMedium,
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final cardWidth = MediaQuery.of(context).size.width * 0.9;
-    final isWide = MediaQuery.of(context).size.width >= 800;
+    final media = MediaQuery.of(context);
+    final screenWidth = media.size.width;
+    final screenHeight = media.size.height - media.padding.vertical;
+    final isWide = screenWidth >= 800;
+
+    // Limit card height to 90% of available height but not more than a reasonable cap
+    final double cardMaxHeight = min(screenHeight * 0.90, 780);
+
+    final double cardMaxWidth = isWide ? 900 : screenWidth * 0.95;
 
     return Scaffold(
       body: SafeArea(
@@ -93,167 +227,74 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
           child: Center(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: isWide ? 900 : cardWidth),
+            child: SizedBox(
+              width: cardMaxWidth,
+              // critical: cap the height so the card can scroll inside
+              height: cardMaxHeight,
               child: Card(
                 elevation: 12,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (isWide)
-                      Expanded(
-                        flex: 5,
-                        child: Container(
-                          padding: const EdgeInsets.all(32),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [Colors.indigo.shade500, Colors.indigo.shade300],
-                            ),
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(16),
-                              bottomLeft: Radius.circular(16),
-                            ),
+                child: isWide
+                    ? Row(
+                        children: [
+                          // left panel (fixed fraction)
+                          Flexible(
+                            flex: 5,
+                            child: _infoPanel(theme),
                           ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(Icons.shield_rounded,
-                                  size: 72, color: Colors.white),
-                              const SizedBox(height: 16),
-                              Text('Secure access',
-                                  style: theme.textTheme.titleMedium!
-                                      .copyWith(color: Colors.white)),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Solo usuario autorizados por su administrador pueden ingresar',
-                                textAlign: TextAlign.center,
-                                style: theme.textTheme.bodyMedium!
-                                    .copyWith(color: Colors.white70),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
 
-                    Expanded(
-                      flex: 7,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 28, vertical: 28),
+                          // right panel: allow internal scrolling if content taller than available
+                          Flexible(
+                            flex: 7,
+                            child: SingleChildScrollView(
+                              // ensure scrolling when needed
+                              padding: EdgeInsets.zero,
+                              child: _formContent(theme),
+                            ),
+                          ),
+                        ],
+                      )
+                    : // narrow layout: stack vertically and allow scrolling
+                    SingleChildScrollView(
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Column(
-                              children: [
-                                Container(
-                                  width: 72,
-                                  height: 72,
-                                  decoration: BoxDecoration(
-                                    color: Colors.indigo.shade50,
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: const Icon(Icons.person, size: 40, color: Colors.indigo),
+                            // show info panel first (no Expanded here)
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(24),
+                              decoration: BoxDecoration(
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(16),
+                                  topRight: Radius.circular(16),
                                 ),
-                                const SizedBox(height: 12),
-                                Text('Bienvenido',
-                                    style: theme.textTheme.titleMedium),
-                                const SizedBox(height: 6),
-                                Text('Inicia Session para continuar',
-                                    style: theme.textTheme.bodyMedium!
-                                        .copyWith(color: Colors.grey[600])),
-                              ],
-                            ),
-
-                            const SizedBox(height: 20),
-
-                            Form(
-                              key: _formKey,
+                                gradient: LinearGradient(
+                                  colors: [Colors.indigo.shade500, Colors.indigo.shade300],
+                                ),
+                              ),
                               child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  TextFormField(
-                                    controller: _emailController,
-                                    keyboardType: TextInputType.emailAddress,
-                                    textInputAction: TextInputAction.next,
-                                    decoration: const InputDecoration(
-                                      labelText: 'Usuario',
-                                      prefixIcon: Icon(Icons.email_outlined),
-                                    ),
-                                    validator: _validateEmail,
-                                  ),
+                                  const Icon(Icons.shield_rounded, size: 64, color: Colors.white),
                                   const SizedBox(height: 12),
-                                  TextFormField(
-                                    controller: _passwordController,
-                                    obscureText: _obscurePassword,
-                                    textInputAction: TextInputAction.done,
-                                    decoration: InputDecoration(
-                                      labelText: 'Contraseña',
-                                      prefixIcon: const Icon(Icons.lock_outline),
-                                      suffixIcon: IconButton(
-                                        icon: Icon(_obscurePassword
-                                            ? Icons.visibility_off
-                                            : Icons.visibility),
-                                        onPressed: () => setState(() =>
-                                            _obscurePassword = !_obscurePassword),
-                                      ),
-                                    ),
-                                    validator: _validatePassword,
-                                    onFieldSubmitted: (_) => _submit(),
-                                  ),
-
-                                  const SizedBox(height: 12),
-                                 
-
-                                  SizedBox(
-                                    width: double.infinity,
-                                    height: 48,
-                                    child: ElevatedButton(
-                                      onPressed: _loading ? null : _submit,
-                                      style: ElevatedButton.styleFrom(
-                                        elevation: 4,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10)),
-                                      ),
-                                      child: _loading
-                                          ? const Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: const [
-                                                SizedBox(
-                                                    width: 18,
-                                                    height: 18,
-                                                    child:
-                                                        CircularProgressIndicator(
-                                                      strokeWidth: 2.2,
-                                                      color: Colors.white,
-                                                    )),
-                                                SizedBox(width: 12),
-                                                Text('Signing in...'),
-                                              ],
-                                            )
-                                          : const Text('Iniciar Session'),
-                                    ),
+                                  Text('Acceso seguro',
+                                      style: theme.textTheme.titleMedium!.copyWith(color: Colors.white)),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    'Solo usuarios autorizados por su administrador pueden ingresar',
+                                    textAlign: TextAlign.center,
+                                    style: theme.textTheme.bodyMedium!.copyWith(color: Colors.white70),
                                   ),
                                 ],
                               ),
                             ),
 
-                            const SizedBox(height: 18),
-
-                            Text(
-                              'Solo usuarios autorizados por su administrador pueden ingresar',
-                              textAlign: TextAlign.center,
-                              style: theme.textTheme.bodyMedium,
-                            ),
+                            // form content
+                            _formContent(theme),
                           ],
                         ),
                       ),
-                    ),
-                  ],
-                ),
               ),
             ),
           ),
