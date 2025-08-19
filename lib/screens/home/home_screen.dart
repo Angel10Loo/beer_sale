@@ -21,11 +21,10 @@ class MyHomeScreen extends StatefulWidget {
 // Add TickerProviderStateMixin to provide vsync for animations
 class _MyHomeScreenState extends State<MyHomeScreen> with TickerProviderStateMixin {
   final List<String> images = [
-    'assets/images/presidenteMM.png',
-    'assets/images/8pm.jpg',
-    'assets/images/corona.png',
-    'assets/images/presidentePP.png',
-    'assets/images/brahma_light_no_bg.png',
+   'assets/images/vitoria.png',
+        'assets/images/GORRA.webp',
+     'assets/images/gorra_blanca.webp',
+     'assets/images/vitoriaagua.webp',
   ];
 
   @override

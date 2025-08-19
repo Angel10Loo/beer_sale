@@ -17,37 +17,12 @@ class InventoryScreen extends StatefulWidget {
 
 class _InventoryScreenState extends State<InventoryScreen> {
    final List<String> images = [
-    // 'assets/images/presidenteMM.png',
-    // 'assets/images/bohemiaP.png',
+     'assets/images/GORRA.webp',
+     'assets/images/gorra_blanca.webp',
+     'assets/images/vitoria.png',
+     'assets/images/vitoriaagua.webp',
 
-    'assets/images/8pm.jpg',
-     'assets/images/corona.png',
-    // 'assets/images/xv.png',
-    // 'assets/images/walker.png',
-     'assets/images/extraviejo.png',
-    // 'assets/images/leyenda.png',
-    // 'assets/images/vinofuerza.png',
-     'assets/images/doblereserva.png',
-    // 'assets/images/sardina.png',
-    // 'assets/images/sardinela.jpg',
-    'assets/images/agua.png',
 
-      'assets/images/presidenteMM.png',
-       'assets/images/presidentePP.png',
-       'assets/images/brahma_light_no_bg.png',
-       'assets/images/yumm_lemon_no_bg.png',
-    'assets/images/snack.jpg',
-       'assets/images/yumm_vanilla_no_bg.png',
-       'assets/images/gatorade.png',
-       'assets/images/kola_real_no_bg.png',
-       'assets/images/xv.png',
-       'assets/images/vinofuerza.png',
-       'assets/images/walker.png',
-       'assets/images/leyenda.png',
-       'assets/images/1010820321.jpg',
-       'assets/images/1010820008.jpg',
-       'assets/images/1010820014.jpg',
-       'assets/images/1010820469.jpg',
   ];
  int? _selectedImageIndex;
     final _stockController = TextEditingController();
