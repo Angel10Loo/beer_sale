@@ -25,7 +25,6 @@ Future<void> main() async {
           create: (_) => SaleProvider(),
           update: (_, productProvider, saleProvider) =>
               saleProvider!..updateProductProvider(productProvider),
-              
         ),
       ],
       child: const MyApp(),
