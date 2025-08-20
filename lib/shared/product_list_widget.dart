@@ -2,6 +2,7 @@
 import 'dart:math';
 import 'package:beer_sale/model/product.dart';
 import 'package:beer_sale/providers/product_provider.dart';
+import 'package:beer_sale/utils/helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -210,7 +211,7 @@ class _ProductCard extends StatelessWidget {
                   ),
                   _StatusChip(
                     icon: Icons.price_check,
-                    label: '\$${product.price.toStringAsFixed(2)}',
+                    label: '\$${product.price}',
                     color: Colors.deepPurple,
                   ),
                 ],
@@ -278,7 +279,7 @@ class _ProductCard extends StatelessWidget {
               ),
               _StatusChip(
                 icon: Icons.price_check,
-                label: '\$${product.price.toStringAsFixed(2)}',
+                label: '\$${product.price}',
                 color: Colors.deepPurple,
               ),
             ],
@@ -443,7 +444,7 @@ class _DetailRow extends StatelessWidget {
 void _showEditDialog(BuildContext context, Product product) {
   final nameController = TextEditingController(text: product.name);
   final stockController = TextEditingController(text: product.stock.toString());
-  final priceController = TextEditingController(text: product.price.toStringAsFixed(2));
+  final priceController = TextEditingController(text: product.price.toString());
   final formKey = GlobalKey<FormState>();
   final media = MediaQuery.of(context);
   final maxDialogWidth = min(media.size.width * 0.9, 620.0);
@@ -498,10 +499,10 @@ void _showEditDialog(BuildContext context, Product product) {
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.price_check),
                 ),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+             
                 validator: (value) {
-                  final v = double.tryParse(value ?? '');
-                  if (v == null || v < 0) return 'Ingrese precio válido';
+                  final v = int.parse(value ?? '');
+                  if (v < 0) return 'Ingrese precio válido';
                   return null;
                 },
               ),
