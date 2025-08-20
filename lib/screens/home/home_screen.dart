@@ -72,12 +72,12 @@ class _MyHomeScreenState extends State<MyHomeScreen> with TickerProviderStateMix
               ),
               ListTile(
                 leading: const Icon(Icons.home),
-                title: const Text('Home'),
+                title: const Text('Inicio'),
                 onTap: () => Navigator.pop(context),
               ),
               ListTile(
                 leading: const Icon(Icons.money),
-                title: const Text('Expenses'),
+                title: const Text('Gastos'),
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.push(

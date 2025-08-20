@@ -32,7 +32,7 @@ class ExpensesTrackerScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: const Text(
-          "Expenses Tracker",
+          "Ratreador de gastos",
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.black87,
@@ -50,7 +50,7 @@ class ExpensesTrackerScreen extends StatelessWidget {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {},
         icon: const Icon(Icons.add),
-        label: const Text("Add Expense"),
+        label: const Text("Agregar Gasto"),
         backgroundColor: Colors.black87,
       ),
     );
