@@ -11,32 +11,15 @@ class ExpenseProvider extends ChangeNotifier {
   List<Expense> get expenses => _expenses;
 
   Future<void> deleteExpense(Expense expense) async {
-  // find index so we can rollback if needed
-  final index = _expenses.indexWhere((e) => e.id == expense.id);
-  final hadIndex = index != -1;
-  final removed = hadIndex ? _expenses.removeAt(index) : null;
-
-  // optimistic update so UI updates immediately
-  notifyListeners();
-
   try {
-    // only delete from Firestore if we have an id
     if (expense.id != null) {
       await _db.collection('expenses').doc(expense.id).delete();
-    } else {
-      // if there's no id (not yet synced), nothing to delete server-side
-      // you might want to handle this differently if needed
-    }
+    } 
   } catch (e) {
-    // rollback on error
-    if (hadIndex && removed != null) {
-      _expenses.insert(index, removed);
-      notifyListeners();
-    }
+ 
     rethrow;
   }
 }
-
 
   Future<void> fetchExpenses() async {
     loading = true;
