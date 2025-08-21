@@ -4,6 +4,10 @@ class Closing {
   final DateTime date;
   final int totalSales;
   final Map<String, dynamic> productDetails; 
+   // New fields
+  final double totalExpenses;
+  final Map<String, dynamic> expensesDetails;
+  final double netProfit;
 
   Closing({
     required this.id,
@@ -11,6 +15,9 @@ class Closing {
     required this.date,
     required this.totalSales,
     required this.productDetails,
+        required this.totalExpenses,
+    required this.expensesDetails,
+    required this.netProfit,
   });
 
   Map<String, dynamic> toMap() {
@@ -19,6 +26,9 @@ class Closing {
       'date': date.toIso8601String(),
       'totalSales': totalSales,
       'productDetails': productDetails,
+        'totalExpenses': totalExpenses,
+      'expensesDetails': expensesDetails,
+      'netProfit': netProfit,
     };
   }
 
@@ -29,6 +39,9 @@ class Closing {
       date: DateTime.parse(map['date']),
       totalSales: map['totalSales'],
       productDetails: Map<String, dynamic>.from(map['productDetails'] ?? {}),
+        totalExpenses: map['totalExpenses'] ?? 0.0,
+      expensesDetails: Map<String, dynamic>.from(map['expensesDetails'] ?? {}),
+      netProfit: map['netProfit'] ?? 0.0,
     );
   }
 }
