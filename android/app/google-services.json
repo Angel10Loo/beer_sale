@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "758229856115",
-    "project_id": "clothe-store-3dca4",
-    "storage_bucket": "clothe-store-3dca4.firebasestorage.app"
+    "project_number": "132774266578",
+    "project_id": "clothe-e7e09",
+    "storage_bucket": "clothe-e7e09.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:758229856115:android:ba352003790191993e1f06",
+        "mobilesdk_app_id": "1:132774266578:android:9f31a7bca6fba6328e8f0b",
         "android_client_info": {
           "package_name": "clothe.com"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBAZhfDCpRTS1kJ1jhrRlSzJHd-LJgmWm0"
+          "current_key": "AIzaSyA5uj-F4IdFoh_D7j8ff97BB0UX9b7RUqQ"
         }
       ],
       "services": {

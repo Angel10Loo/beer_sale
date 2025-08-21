@@ -54,11 +54,11 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBAZhfDCpRTS1kJ1jhrRlSzJHd-LJgmWm0',
-    appId: '1:758229856115:android:ba352003790191993e1f06',
-    messagingSenderId: '758229856115',
-    projectId: 'clothe-store-3dca4',
-    storageBucket: 'clothe-store-3dca4.firebasestorage.app',
+    apiKey: 'AIzaSyA5uj-F4IdFoh_D7j8ff97BB0UX9b7RUqQ',
+    appId: '1:132774266578:android:9f31a7bca6fba6328e8f0b',
+    messagingSenderId: '132774266578',
+    projectId: 'clothe-e7e09',
+    storageBucket: 'clothe-e7e09.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
