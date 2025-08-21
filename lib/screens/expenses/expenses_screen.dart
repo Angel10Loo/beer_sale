@@ -1,5 +1,6 @@
 import 'package:beer_sale/model/expense.dart';
 import 'package:beer_sale/providers/expense_provider.dart';
+import 'package:beer_sale/utils/helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -139,7 +140,9 @@ class _ExpensesTrackerScreenState extends State<ExpensesTrackerScreen> {
         children: [
           const Text("Total de Gastos", style: TextStyle(color: Colors.white70, fontSize: 16)),
           const SizedBox(height: 8),
-          Text("\$${total.toStringAsFixed(2)}", style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
+          Text("\$${ Helper.formatNumberWithCommas(
+      Helper.removeTrailingZeros(total),
+    )}", style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
         ],
       ),
     );
@@ -170,30 +173,28 @@ Widget _buildExpensesList(List<Expense> expenses) {
           // keep a local copy for undo
           final removedExpense = expense;
 
-          // call provider to delete (optimistic inside provider)
+          final index = expenses.indexWhere((e) => e.id == expense.id);
+  final hadIndex = index != -1;
+  final removed = hadIndex ? expenses.removeAt(index) : null;
+
           try {
             await provider.deleteExpense(removedExpense);
-            // show undo snack
             ScaffoldMessenger.of(context).clearSnackBars();
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Gasto eliminado'),
+                content: const Text('Gasto eliminado'),
                 action: SnackBarAction(
                   label: 'DESHACER',
                   onPressed: () async {
-                    // re-add the expense (this will create a new doc if needed)
-                    try {
-                      await provider.addExpense(removedExpense);
-                    } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('No se pudo restaurar')),
-                      );
-                    }
+                  
                   },
                 ),
                 duration: const Duration(seconds: 4),
               ),
             );
+            setState(() {
+              
+            });
           } catch (e) {
             // if provider rolled back on error it should reinsert; otherwise show error
             ScaffoldMessenger.of(context).showSnackBar(

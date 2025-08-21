@@ -1,4 +1,5 @@
 import 'package:beer_sale/firebase_options.dart';
+import 'package:beer_sale/providers/expense_provider.dart';
 import 'package:beer_sale/providers/open_account_provider.dart';
 import 'package:beer_sale/providers/product_provider.dart';
 import 'package:beer_sale/providers/sale_provider.dart';
@@ -19,6 +20,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => ProductProvider()),
         ChangeNotifierProvider(create: (_) => OpenAccountProvider()),
             ChangeNotifierProvider(create: (_) => UserProvider()),
+            ChangeNotifierProvider(create: (_) => ExpenseProvider()),
         ChangeNotifierProxyProvider<ProductProvider, SaleProvider>(
           create: (_) => SaleProvider(),
           update: (_, productProvider, saleProvider) =>

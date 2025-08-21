@@ -31,7 +31,15 @@ Future<String> performDailyClosing() async {
       .where('saleDate', isLessThan: endOfDay)
       .get();
 
+       // 🔹 Fetch today's expenses
+  final QuerySnapshot expensesSnapshot = await firestore
+      .collection('expenses')
+      .where('date', isGreaterThanOrEqualTo: startOfDay)
+      .where('date', isLessThan: endOfDay)
+      .get();
+
   final sales = salesSnapshot.docs;
+   final expenses = expensesSnapshot.docs;
   if (sales.isEmpty) {
     return "";
   }
@@ -67,11 +75,30 @@ for (var sale in sales) {
     };
   });
 
+    double totalExpensesAmount = 0;
+  List<Map<String, dynamic>> expensesDetails = [];
+
+if(expenses.isNotEmpty){
+  for (var expense in expenses) {
+    final data = expense.data() as Map<String, dynamic>;
+    totalExpensesAmount += (data['amount'] ?? 0).toDouble();
+
+    expensesDetails.add({
+      'title': data['title'] ?? 'No description',
+      'amount': data['amount'] ?? 0,
+    });
+  }
+}
+
   final closing = {
     'total': totalAmount,
     'date': now.toIso8601String(),
     'totalSales': totalUnitsSold,
     'productDetails': productDetails,
+    'totalExpenses': totalExpensesAmount,
+    'expensesDetails': expensesDetails,
+    'netProfit': totalAmount - totalExpensesAmount,
+
   };
 
  final docRef =  await firestore.collection('closings').add(closing);
