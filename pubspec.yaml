@@ -40,6 +40,7 @@ dependencies:
   firebase_core: ^3.8.0
   cloud_firestore: ^5.5.0
   multi_dropdown: ^3.0.1
+  flutter_launcher_icons: ^0.14.4
 
 
 dev_dependencies:
@@ -60,6 +61,8 @@ flutter:
   # like this:
   assets:
     - assets/images/
+    - assets/images/Brahma33.png
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -86,3 +89,6 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+flutter_icons:
+  android: true
+  image_path: "assets/images/Brahma33.png"
