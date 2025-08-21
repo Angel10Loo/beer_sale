@@ -82,7 +82,7 @@ class _MyHomeScreenState extends State<MyHomeScreen> with TickerProviderStateMix
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (_) =>  ExpensesTrackerScreen()),
+                        builder: (_) => const ExpensesTrackerScreen()),
                   );
                 },
               ),
