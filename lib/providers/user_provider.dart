@@ -105,13 +105,13 @@ class UserProvider extends ChangeNotifier {
     _setError(null);
     try {
 
-        await createUserPlaintext(
-    email: "admin",
-    name: "Administrador",
-    plainPassword: "1234",
-    role: UserRole.admin,
-    adminUid: "system",
-  );
+  //       await createUserPlaintext(
+  //   email: "admin",
+  //   name: "Administrador",
+  //   plainPassword: "1234",
+  //   role: UserRole.admin,
+  //   adminUid: "system",
+  // );
 
       final q = await _usersColl
           .where('email', isEqualTo: email.trim().toLowerCase())
